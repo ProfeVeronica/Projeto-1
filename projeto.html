@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela de Desenho</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="tela"></canvas>
+    <script>
+        // Esperar até que o DOM seja carregado
+        document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById('tela');
+            
+            // Verificar se o elemento <canvas> existe
+            if (!canvas) {
+                console.error("Elemento 'canvas' não encontrado!");
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            // Configurar o tamanho do canvas
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Variáveis para controle do desenho
+            let desenhando = false;
+
+            // Configurações do desenho
+            ctx.strokeStyle = "white"; // Cor do desenho
+            ctx.lineWidth = 5;         // Largura da linha
+            ctx.lineCap = "round";     // Formato da ponta
+
+            // Funções de controle
+            function iniciarDesenho(event) {
+                desenhando = true;
+                ctx.beginPath();
+                ctx.moveTo(event.clientX, event.clientY); // Iniciar no ponto atual
+            }
+
+            function desenhar(event) {
+                if (!desenhando) return;
+                ctx.lineTo(event.clientX, event.clientY); // Traçar a linha
+                ctx.stroke();
+            }
+
+            function pararDesenho() {
+                desenhando = false;
+                ctx.closePath();
+            }
+
+            // Event Listeners para desenhar com o mouse
+            canvas.addEventListener('mousedown', iniciarDesenho);
+            canvas.addEventListener('mousemove', desenhar);
+            canvas.addEventListener('mouseup', pararDesenho);
+            canvas.addEventListener('mouseleave', pararDesenho);
+
+            // Ajustar o canvas ao redimensionar a janela
+            window.addEventListener('resize', () => {
+                const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                ctx.putImageData(imagem, 0, 0);
+            });
+        });
+    </script>
+</body>
+</html>
